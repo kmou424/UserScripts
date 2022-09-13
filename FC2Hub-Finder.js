@@ -105,7 +105,7 @@
 
     function isNotFoundOnAllSites(retries) {
         for (let i = 0; i < retries.length; ++i) {
-            if (retries[i] <= MAX_RETRIES) return false;
+            if (AddonBtnWrapper.sites_enabled[i] && retries[i] <= MAX_RETRIES) return false;
         }
         return true;
     }
@@ -113,6 +113,7 @@
     function requestAddonBtn(wrapper, searchKeyword, root, before) {
         let keyword = searchKeyword.replace("FC2-PPV-", "");
         for (let i = 0; i < AddonBtnWrapper.sites_name.length; ++i) {
+            if (!AddonBtnWrapper.sites_enabled[i]) continue;
             if (hasChildIncludeInnerText(root, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnWrapper.sites_btnKey[i], AddonBtnWrapper.sites_name[i]]))) continue;
             let site_name = AddonBtnWrapper.sites_name[i];
             let url = formatStr(AddonBtnWrapper.sites_url[i], ["#keyWord#"], [keyword]);
