@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         FC2Hub-Finder
-// @namespace    https://kmou424.moe/
+// @homepageURL  https://github.com/kmou424/TampermonkeyScripts
 // @version      1.0.3
 // @description  Give you a better experience to explore fc2.
 // @author       kmou424
