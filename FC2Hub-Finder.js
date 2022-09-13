@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FC2Hub-Finder
 // @namespace    https://kmou424.moe/
-// @version      1.0.1
+// @version      1.0.3
 // @description  Give you a better experience to explore fc2.
 // @author       kmou424
 // @match        https://fc2hub.com/*
