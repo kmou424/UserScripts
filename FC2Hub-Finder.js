@@ -147,10 +147,11 @@
                 method: "get",
                 url: url,
                 data: '',
+                timeout: 6000,
                 headers: {
                     'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
                 },
-                onload: function(res){
+                onload: function(res) {
                     if (res.status === 200) {
                         let data = res.response;
                         let result = AddonBtnWrapper.sites_process[i](data, {keyword: keyword, index: i, url: url});
@@ -176,6 +177,11 @@
                         processing.delete(url);
                     }
                 },
+                ontimeout: function(event) {
+                    if (processing.has(url)) {
+                        processing.delete(url);
+                    }
+                }
             });
         }
     }
