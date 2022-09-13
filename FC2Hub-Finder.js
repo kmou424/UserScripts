@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FC2Hub-Finder
 // @namespace    https://kmou424.moe/
-// @version      1.0
+// @version      1.0.1
 // @description  Give you a better experience to explore fc2.
 // @author       kmou424
 // @match        https://fc2hub.com/*
@@ -19,6 +19,8 @@
     const ADDON_BTN_TEMPLATE = '<a href="#url#" class="btn" style="margin-right: 4px;margin-left: 4px;color: #fff;background-color: #FF4081;border-color: #FF4081;" target="_blank">#text#</a>';
     // 如果获取失败的最大重试次数
     const MAX_RETRIES = 3;
+    // 是否删除重试后找不到结果的卡片
+    const DELETE_CARD_IF_NOT_FOUND = false;
 
     // 用来记录重试次数的哈希表
     let map = new Map();
@@ -71,6 +73,13 @@
         return undefined;
     }
 
+    function getParentNode(node, level) {
+        for (let i = 0; i < level; ++i) {
+            node = node.parentNode;
+        }
+        return node;
+    }
+
     function hasChildIncludeInnerText(node, text) {
         for (let i = 0; i < node.childNodes.length; ++i) {
             if (!isNull(node.childNodes[i].innerText) && node.childNodes[i].innerText.includes(text)) {
@@ -100,7 +109,14 @@
             let url = formatStr(wrapper.sites_url[i], ["#keyWord#"], [keyword]);
             let retires = 0;
             if (map.has(url)) retires = map.get(url);
-            if (retires == -1 || retires > MAX_RETRIES) continue;
+            if (retires == -1) continue;
+            if (retires > MAX_RETRIES) {
+                if (DELETE_CARD_IF_NOT_FOUND) {
+                    let child = getParentNode(root, 2);
+                    child.parentNode.removeChild(child);
+                }
+                continue;
+            }
             if (retires > 0) {
                 console.log(formatStr(
                     "#LOG_TAG#: Start #retires#st retry for \"#searchKeyword#\" on \"#site_name#\"...",
