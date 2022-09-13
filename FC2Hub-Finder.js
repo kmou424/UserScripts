@@ -103,29 +103,43 @@
         root.insertBefore(addon, before);
     }
 
+    function isNotFoundOnAllSites(retries) {
+        for (let i = 0; i < retries.length; ++i) {
+            if (retries[i] <= MAX_RETRIES) return false;
+        }
+        return true;
+    }
+
     function requestAddonBtn(wrapper, searchKeyword, root, before) {
-        if (hasChildIncludeInnerText(root, wrapper.btnKey)) return;
-        for (let i = 0; i < wrapper.sites_url.length; ++i) {
-            let keyword = searchKeyword.replace("FC2-PPV-", "");
-            let site_name = wrapper.sites_name[i];
-            let url = formatStr(wrapper.sites_url[i], ["#keyWord#"], [keyword]);
+        let keyword = searchKeyword.replace("FC2-PPV-", "");
+        for (let i = 0; i < AddonBtnWrapper.sites_name.length; ++i) {
+            if (hasChildIncludeInnerText(root, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnWrapper.sites_btnKey[i], AddonBtnWrapper.sites_name[i]]))) continue;
+            let site_name = AddonBtnWrapper.sites_name[i];
+            let url = formatStr(AddonBtnWrapper.sites_url[i], ["#keyWord#"], [keyword]);
             if (processing.has(url)) continue;
             else processing.set(url, 1);
-            let retires = 0;
-            if (map.has(url)) retires = map.get(url);
-            if (retires == -1) continue;
-            if (retires > MAX_RETRIES) {
-                if (DELETE_CARD_IF_NOT_FOUND) {
+            let retries = (new Array(AddonBtnWrapper.sites_name.length)).fill(0);
+            if (map.has(searchKeyword)) {
+                retries = map.get(searchKeyword);
+            } else {
+                map.set(searchKeyword, retries);
+            }
+            if (retries[i] > MAX_RETRIES) {
+                if (DELETE_CARD_IF_NOT_FOUND && isNotFoundOnAllSites(retries)) {
                     let child = getParentNode(root, 2);
-                    child.parentNode.removeChild(child);
+                    if (!isNull(child) && !isNull(child.parentNode)) {
+                        child.parentNode.removeChild(child);
+                    }
                 }
+            }
+            if (retries[i] == -1 || retries[i] > MAX_RETRIES) {
                 continue;
             }
-            if (retires > 0) {
+            if (retries[i] > 0) {
                 console.log(formatStr(
-                    "#LOG_TAG#: Start #retires#st retry for \"#searchKeyword#\" on \"#site_name#\"...",
-                    ["#LOG_TAG#", "#retires#", "#searchKeyword#", "#site_name#"],
-                    [LOG_TAG, retires, searchKeyword, site_name]
+                    "#LOG_TAG#: Start #retries#st retry for \"#searchKeyword#\" on \"#site_name#\"...",
+                    ["#LOG_TAG#", "#retries#", "#searchKeyword#", "#site_name#"],
+                    [LOG_TAG, retries[i], searchKeyword, site_name]
                 ))
             }
             GM_xmlhttpRequest({
@@ -138,24 +152,27 @@
                 onload: function(res){
                     if (res.status === 200) {
                         let data = res.response;
-                        let addon_btn = wrapper.process(data, {keyword: keyword, site_name: site_name, url: url});
+                        let result = AddonBtnWrapper.sites_process[i](data, {keyword: keyword, index: i, url: url});
+                        let addon_btn = wrapper.make(result);
                         if (!isNull(addon_btn)) {
                             addChildBefore(root, addon_btn, before);
-                            map.set(url, -1);
+                            retries[i] = -1;
+                            map.set(searchKeyword, retries);
                             console.log(formatStr(
                                 "#LOG_TAG#: \"#searchKeyword#\" has been found on \"#site_name#\".",
                                 ["#LOG_TAG#", "#searchKeyword#", "#site_name#"],
                                 [LOG_TAG, searchKeyword, site_name]));
                         } else {
-                            map.set(url, retires + 1);
+                            retries[i] += 1;
+                            map.set(searchKeyword, retries);
                             console.log(formatStr(
                                 "#LOG_TAG#: \"#searchKeyword#\" was not found on \"#site_name#\".",
                                 ["#LOG_TAG#", "#searchKeyword#", "#site_name#"],
                                 [LOG_TAG, searchKeyword, site_name]));
                         }
-                        if (processing.has(url)) {
-                            processing.delete(url);
-                        }
+                    }
+                    if (processing.has(url)) {
+                        processing.delete(url);
                     }
                 },
             });
@@ -169,29 +186,44 @@
         }
     }
 
-    class OnlineWatchWrapper {
-        constructor() {
-            this.btnKey = "在线";
-            this.sites_name = ["supjav"];
-            this.sites_url = ["https://supjav.com/?s=#keyWord#"];
-            this.sites_enabled = [true];
-        }
-        process(data, args) {
+    class AddonBtnProcess {
+        static supjav(data, args) {
             let result = undefined;
             if (isNull(data)) return result;
             let res_doc = htmlTextConvert(data);
             if (isNull(res_doc)) return result;
             let archive_t = getFirstElementByClassName(res_doc, "archive-title");
             if (!isNull(archive_t) && !hasChildIncludeInnerText(archive_t, args.keyword + "(0)")) {
-                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [this.btnKey, args.site_name]));
+                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnWrapper.sites_btnKey[args.index], AddonBtnWrapper.sites_name[args.index]]));
             }
+            return result;
+        }
+
+        static sukebei(data, args) {
+            let result = undefined;
+            if (isNull(data)) return result;
+            if (!data.includes("No results found")) {
+                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnWrapper.sites_btnKey[args.index], AddonBtnWrapper.sites_name[args.index]]));
+            }
+            return result;
+        }
+    }
+
+    class AddonBtnWrapper {
+        static sites_btnKey = ["在线", "下载"];
+        static sites_enabled = [true, false];
+        static sites_name = ["Supjav", "Sukebei"];
+        static sites_process = [AddonBtnProcess.supjav, AddonBtnProcess.sukebei];
+        static sites_url = ["https://supjav.com/?s=#keyWord#", "https://sukebei.nyaa.si/?f=0&c=0_0&q=#keyWord#"];
+
+        make(result) {
             if (isNull(result)) return result;
             let template1 = formatStr(ADDON_BTN_TEMPLATE, ["#url#", "#text#"], [result.url, result.text]);
             return htmlTextConvert(template1).getElementsByTagName('a')[0];
         }
     }
 
-    const btnClass = [OnlineWatchWrapper];
+    const btnClass = [AddonBtnWrapper];
 
     let interval = setInterval(() => {
         let cb_list = getElementsByClassName(document, 'card-body');
