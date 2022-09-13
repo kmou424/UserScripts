@@ -1,0 +1,22 @@
+{
+  "BLANK_PATCH": {
+    "RUN_ON": [
+      "*"
+    ],
+    "RULES": [
+      "*"
+    ]
+  },
+  "AUTO_OPEN": {
+    "RUN_ON": [
+      "https://sukebei.nyaa.si/"
+    ],
+    "RULES": [
+      "pics4you.net"
+    ]
+  },
+  "AUTOMATOR": {
+    "RUN_ON": [],
+    "RULES": []
+  }
+}
