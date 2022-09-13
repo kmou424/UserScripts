@@ -24,6 +24,8 @@
 
     // 用来记录重试次数的哈希表
     let map = new Map();
+    // 记录任务是否正在处理中(防止出现上一次任务未被处理完又开始处理下一个任务的情况)
+    let processing = new Map();
 
     function isNull(obj) {
         return obj == undefined || obj == null;
@@ -107,6 +109,8 @@
             let keyword = searchKeyword.replace("FC2-PPV-", "");
             let site_name = wrapper.sites_name[i];
             let url = formatStr(wrapper.sites_url[i], ["#keyWord#"], [keyword]);
+            if (processing.has(url)) continue;
+            else processing.set(url, 1);
             let retires = 0;
             if (map.has(url)) retires = map.get(url);
             if (retires == -1) continue;
@@ -148,6 +152,9 @@
                                 "#LOG_TAG#: \"#searchKeyword#\" was not found on \"#site_name#\".",
                                 ["#LOG_TAG#", "#searchKeyword#", "#site_name#"],
                                 [LOG_TAG, searchKeyword, site_name]));
+                        }
+                        if (processing.has(url)) {
+                            processing.delete(url);
                         }
                     }
                 },
