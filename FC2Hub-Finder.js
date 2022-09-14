@@ -232,7 +232,26 @@
 
     const btnClass = [AddonBtnWrapper];
 
+    class Hacks {
+        static setAllATagBlank() {
+            // Hack: 使所有a标签在新窗口打开
+            let a_list = document.getElementsByTagName('a');
+            for (let i = 0; i < a_list.length; ++i) {
+                // 如果是页面切换组件, 则跳过不设置
+                if (!isNull(a_list[i].className) && a_list[i].className.includes("page-link")) {
+                    continue;
+                }
+                if (!isNull(a_list[i]) && a_list[i].target != "_blank") {
+                    a_list[i].target = "_blank";
+                }
+            }
+        }
+    }
+
     let interval = setInterval(() => {
+        /* Hack begin */
+        Hacks.setAllATagBlank();
+        /* Hack end */
         let cb_list = getElementsByClassName(document, 'card-body');
         for (let i = 0; i < cb_list.length; i++) {
             let ct = getFirstElementByClassName(cb_list[i], 'card-title');
