@@ -105,21 +105,21 @@
 
     function isNotFoundOnAllSites(retries) {
         for (let i = 0; i < retries.length; ++i) {
-            if (AddonBtnWrapper.sites_enabled[i] && retries[i] <= MAX_RETRIES) return false;
+            if (AddonBtnBuilder.sites_enabled[i] && retries[i] <= MAX_RETRIES) return false;
         }
         return true;
     }
 
     function requestAddonBtn(wrapper, searchKeyword, root, before) {
         let keyword = searchKeyword.replace("FC2-PPV-", "");
-        for (let i = 0; i < AddonBtnWrapper.sites_name.length; ++i) {
-            if (!AddonBtnWrapper.sites_enabled[i]) continue;
-            if (hasChildIncludeInnerText(root, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnWrapper.sites_btnKey[i], AddonBtnWrapper.sites_name[i]]))) continue;
-            let site_name = AddonBtnWrapper.sites_name[i];
-            let url = formatStr(AddonBtnWrapper.sites_url[i], ["#keyWord#"], [keyword]);
+        for (let i = 0; i < AddonBtnBuilder.sites_name.length; ++i) {
+            if (!AddonBtnBuilder.sites_enabled[i]) continue;
+            if (hasChildIncludeInnerText(root, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[i], AddonBtnBuilder.sites_name[i]]))) continue;
+            let site_name = AddonBtnBuilder.sites_name[i];
+            let url = formatStr(AddonBtnBuilder.sites_url[i], ["#keyWord#"], [keyword]);
             if (processing.has(url)) continue;
             else processing.set(url, 1);
-            let retries = (new Array(AddonBtnWrapper.sites_name.length)).fill(0);
+            let retries = (new Array(AddonBtnBuilder.sites_name.length)).fill(0);
             if (map.has(searchKeyword)) {
                 retries = map.get(searchKeyword);
             } else {
@@ -154,7 +154,7 @@
                 onload: function(res) {
                     if (res.status === 200) {
                         let data = res.response;
-                        let result = AddonBtnWrapper.sites_process[i](data, {keyword: keyword, index: i, url: url});
+                        let result = AddonBtnBuilder.sites_process[i](data, {keyword: keyword, index: i, url: url});
                         let addon_btn = wrapper.make(result);
                         if (!isNull(addon_btn)) {
                             addChildBefore(root, addon_btn, before);
@@ -201,7 +201,7 @@
             if (isNull(res_doc)) return result;
             let archive_t = getFirstElementByClassName(res_doc, "archive-title");
             if (!isNull(archive_t) && !hasChildIncludeInnerText(archive_t, args.keyword + "(0)")) {
-                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnWrapper.sites_btnKey[args.index], AddonBtnWrapper.sites_name[args.index]]));
+                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[args.index], AddonBtnBuilder.sites_name[args.index]]));
             }
             return result;
         }
@@ -210,13 +210,13 @@
             let result = undefined;
             if (isNull(data)) return result;
             if (!data.includes("No results found")) {
-                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnWrapper.sites_btnKey[args.index], AddonBtnWrapper.sites_name[args.index]]));
+                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[args.index], AddonBtnBuilder.sites_name[args.index]]));
             }
             return result;
         }
     }
 
-    class AddonBtnWrapper {
+    class AddonBtnBuilder {
         static sites_btnKey = ["在线", "下载"];
         static sites_enabled = [true, false];
         static sites_name = ["Supjav", "Sukebei"];
@@ -230,7 +230,7 @@
         }
     }
 
-    const btnClass = [AddonBtnWrapper];
+    const btnClass = [AddonBtnBuilder];
 
     class Hacks {
         static setAllATagBlank() {
