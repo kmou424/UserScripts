@@ -214,14 +214,34 @@
             }
             return result;
         }
+
+        static zhongziso(data, args) {
+            let result = undefined;
+            if (isNull(data)) return result;
+            let res_doc = htmlTextConvert(data);
+            if (isNull(res_doc)) return result;
+            let panel_body = getFirstElementByClassName(res_doc, "panel-body");
+            if (!isNull(panel_body) && getElementsByClassName(panel_body, "list-group").length != 0) {
+                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[args.index], AddonBtnBuilder.sites_name[args.index]]));
+            }
+            return result;
+        }
     }
 
     class AddonBtnBuilder {
-        static sites_btnKey = ["在线", "下载"];
-        static sites_enabled = [true, false];
-        static sites_name = ["Supjav", "Sukebei"];
-        static sites_process = [AddonBtnProcess.supjav, AddonBtnProcess.sukebei];
-        static sites_url = ["https://supjav.com/?s=#keyWord#", "https://sukebei.nyaa.si/?f=0&c=0_0&q=#keyWord#"];
+        static sites_btnKey = ["在线", "下载", "下载"];
+        static sites_enabled = [true, false, true];
+        static sites_name = ["Supjav", "Sukebei", "种子搜"];
+        static sites_process = [
+            AddonBtnProcess.supjav,
+            AddonBtnProcess.sukebei,
+            AddonBtnProcess.zhongziso
+        ];
+        static sites_url = [
+            "https://supjav.com/?s=#keyWord#",
+            "https://sukebei.nyaa.si/?f=0&c=0_0&q=#keyWord#",
+            "https://m.zhongzilou.com/list/#keyWord#/1"
+        ];
 
         make(result) {
             if (isNull(result)) return result;
