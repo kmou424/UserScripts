@@ -15,6 +15,9 @@
     // 日志标签
     const LOG_TAG = "FC2Hub-Finder"
 
+    // 用户代理
+    const BROWSER_USER_AGENT = navigator.userAgent;
+
     // 插入按钮模板
     const ADDON_BTN_TEMPLATE = [
         '<a href="#url#" class="btn" style="margin-right: 4px;margin-left: 4px;color: #fff;background-color: #FF4081;border-color: #FF4081;" target="_blank">#text#</a>',
@@ -192,7 +195,7 @@
                 data: '',
                 timeout: 6000,
                 headers: {
-                    'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.33'
+                    'user-agent': BROWSER_USER_AGENT
                 },
                 onload: function(res) {
                     if (res.status === 200) {
