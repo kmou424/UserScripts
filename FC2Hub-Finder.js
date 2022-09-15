@@ -187,9 +187,9 @@
     }
 
     class SearchResult {
-        constructor(url, text) {
-            this.url = url;
-            this.text = text;
+        constructor(args) {
+            this.url = args.url;
+            this.text = formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[args.index], AddonBtnBuilder.sites_name[args.index]]);
         }
     }
 
@@ -201,7 +201,7 @@
             if (isNull(res_doc)) return result;
             let archive_t = getFirstElementByClassName(res_doc, "archive-title");
             if (!isNull(archive_t) && !hasChildIncludeInnerText(archive_t, args.keyword + "(0)")) {
-                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[args.index], AddonBtnBuilder.sites_name[args.index]]));
+                result = new SearchResult(args);
             }
             return result;
         }
@@ -210,7 +210,7 @@
             let result = undefined;
             if (isNull(data)) return result;
             if (!data.includes("No results found")) {
-                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[args.index], AddonBtnBuilder.sites_name[args.index]]));
+                result = new SearchResult(args);
             }
             return result;
         }
@@ -222,7 +222,7 @@
             if (isNull(res_doc)) return result;
             let panel_body = getFirstElementByClassName(res_doc, "panel-body");
             if (!isNull(panel_body) && getElementsByClassName(panel_body, "list-group").length != 0) {
-                result = new SearchResult(args.url, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[args.index], AddonBtnBuilder.sites_name[args.index]]));
+                result = new SearchResult(args);
             }
             return result;
         }
