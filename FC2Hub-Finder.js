@@ -206,6 +206,18 @@
             return result;
         }
 
+        static bestjavporn(data, args) {
+            let result = undefined;
+            if (isNull(data)) return result;
+            let res_doc = htmlTextConvert(data);
+            if (isNull(res_doc)) return result;
+            let widget_title = getFirstElementByClassName(res_doc, "widget-title");
+            if (!isNull(widget_title) && !hasChildIncludeInnerText(widget_title, "Nothing found")) {
+                result = new SearchResult(args);
+            }
+            return result;
+        }
+
         static sukebei(data, args) {
             let result = undefined;
             if (isNull(data)) return result;
@@ -229,16 +241,18 @@
     }
 
     class AddonBtnBuilder {
-        static sites_btnKey = ["在线", "下载", "下载"];
-        static sites_enabled = [true, false, true];
-        static sites_name = ["Supjav", "Sukebei", "种子搜"];
+        static sites_btnKey = ["在线", "在线", "下载", "下载"];
+        static sites_enabled = [true, true, false, true];
+        static sites_name = ["Supjav", "BestJavPorn", "Sukebei", "种子搜"];
         static sites_process = [
             AddonBtnProcess.supjav,
+            AddonBtnProcess.bestjavporn,
             AddonBtnProcess.sukebei,
             AddonBtnProcess.zhongziso
         ];
         static sites_url = [
             "https://supjav.com/?s=#keyWord#",
+            "https://www3.bestjavporn.com/search/#keyWord#",
             "https://sukebei.nyaa.si/?f=0&c=0_0&q=#keyWord#",
             "https://m.zhongzilou.com/list/#keyWord#/1"
         ];
