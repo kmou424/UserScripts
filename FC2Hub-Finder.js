@@ -169,7 +169,7 @@
                 map.set(searchKeyword, retries);
             }
             if (retries[i] > MAX_RETRIES) {
-                if (DELETE_CARD_IF_NOT_FOUND && isNotFoundOnAllSites(retries)) {
+                if (DELETE_CARD_IF_NOT_FOUND && isNotFoundOnAllSites(retries) && btnTempl != 1) {
                     let child = getParentNode(root, 2);
                     if (!isNull(child) && !isNull(child.parentNode)) {
                         child.parentNode.removeChild(child);
