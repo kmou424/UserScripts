@@ -16,7 +16,10 @@
     const LOG_TAG = "FC2Hub-Finder"
 
     // 插入按钮模板
-    const ADDON_BTN_TEMPLATE = '<a href="#url#" class="btn" style="margin-right: 4px;margin-left: 4px;color: #fff;background-color: #FF4081;border-color: #FF4081;" target="_blank">#text#</a>';
+    const ADDON_BTN_TEMPLATE = [
+        '<a href="#url#" class="btn" style="margin-right: 4px;margin-left: 4px;color: #fff;background-color: #FF4081;border-color: #FF4081;" target="_blank">#text#</a>',
+        '<div class="col-12" style="padding-bottom: 10px;"><a href="#url#" target="_blank" class="btn btn-block" style="color: #fff;background-color: #FF4081;border-color: #FF4081;" target="_blank">#text#</a></div>'
+    ];
     // 如果获取失败的最大重试次数
     const MAX_RETRIES = 3;
     // 是否删除重试后找不到结果的卡片
@@ -33,6 +36,22 @@
 
     function htmlTextConvert(html_text) {
         return new DOMParser().parseFromString(html_text, 'text/html');
+    }
+
+    function getAllElementsInNode(node) {
+        let ret = [];
+        let tmpArr = [...node.childNodes];
+        while (tmpArr.length > 0) {
+            let front = tmpArr[0];
+            tmpArr.shift();
+            ret.push(front);
+            if (front.childNodes.length > 0) {
+                for (let i = front.childNodes.length - 1; i >= 0; i--) {
+                    tmpArr.unshift(front.childNodes[i]);
+                }
+            }
+        }
+        return ret;
     }
 
     function getElementsByClassName(doc, classname) {
@@ -52,13 +71,36 @@
                 return elements[0];
             }
         } else if (node instanceof Node) {
-            for (let i = 0; i < node.childNodes.length; ++i) {
-                if (node.childNodes[i].className == classname) {
-                    return node.childNodes[i];
+            let elements = getAllElementsInNode(node);
+            for (let i = 0; i < elements.length; ++i) {
+                if (elements[i].className == classname) {
+                    return elements[i];
                 }
             }
         }
         return undefined;
+    }
+
+    function getElementsByIncludeInnerText(node, text) {
+        let ret = [];
+        let elements = [];
+        if (node instanceof Document) {
+            elements = node.getElementsByTagName('*');
+        } else if (node instanceof Node) {
+            elements = getAllElementsInNode(node);
+        }
+        for (let i = 0; i < elements.length; ++i) {
+            if (!isNull(elements[i].innerText) && elements[i].innerText.includes(text)) {
+                ret.push(elements[i]);
+            }
+        }
+        return ret;
+    }
+
+    function getFirstElementByIncludeInnerText(node, text) {
+        let elements = getElementsByIncludeInnerText(node, text);
+        if (elements.length == 0) return undefined;
+        return elements[0];
     }
 
     function getLastBackChild(node, cnt) {
@@ -99,8 +141,8 @@
         return str;
     }
 
-    function addChildBefore(root, addon, before) {
-        root.insertBefore(addon, before);
+    function addChildBefore(addon, before) {
+        before.parentNode.insertBefore(addon, before);
     }
 
     function isNotFoundOnAllSites(retries) {
@@ -110,7 +152,8 @@
         return true;
     }
 
-    function requestAddonBtn(wrapper, searchKeyword, root, before) {
+
+    function requestAddonBtn(wrapper, searchKeyword, root, before, btnTempl) {
         let keyword = searchKeyword.replace("FC2-PPV-", "");
         for (let i = 0; i < AddonBtnBuilder.sites_name.length; ++i) {
             if (!AddonBtnBuilder.sites_enabled[i]) continue;
@@ -149,35 +192,40 @@
                 data: '',
                 timeout: 6000,
                 headers: {
-                    'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
+                    'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.33'
                 },
                 onload: function(res) {
                     if (res.status === 200) {
                         let data = res.response;
                         let result = AddonBtnBuilder.sites_process[i](data, {keyword: keyword, index: i, url: url});
-                        let addon_btn = wrapper.make(result);
+                        let addon_btn = wrapper.make(result, btnTempl);
                         if (!isNull(addon_btn)) {
-                            addChildBefore(root, addon_btn, before);
+                            addChildBefore(addon_btn, before);
                             retries[i] = -1;
                             map.set(searchKeyword, retries);
                             console.log(formatStr(
                                 "#LOG_TAG#: \"#searchKeyword#\" has been found on \"#site_name#\".",
                                 ["#LOG_TAG#", "#searchKeyword#", "#site_name#"],
                                 [LOG_TAG, searchKeyword, site_name]));
-                        } else {
-                            retries[i] += 1;
-                            map.set(searchKeyword, retries);
-                            console.log(formatStr(
-                                "#LOG_TAG#: \"#searchKeyword#\" was not found on \"#site_name#\".",
-                                ["#LOG_TAG#", "#searchKeyword#", "#site_name#"],
-                                [LOG_TAG, searchKeyword, site_name]));
                         }
                     }
+                    retries[i] += 1;
+                    map.set(searchKeyword, retries);
+                    console.log(formatStr(
+                        "#LOG_TAG#: \"#searchKeyword#\" was not found on \"#site_name#\".",
+                        ["#LOG_TAG#", "#searchKeyword#", "#site_name#"],
+                        [LOG_TAG, searchKeyword, site_name]));
                     if (processing.has(url)) {
                         processing.delete(url);
                     }
                 },
                 ontimeout: function(event) {
+                    retries[i] += 1;
+                    map.set(searchKeyword, retries);
+                    console.log(formatStr(
+                        "#LOG_TAG#: Request timeout while searching \"#searchKeyword#\" on \"#site_name#\".",
+                        ["#LOG_TAG#", "#searchKeyword#", "#site_name#"],
+                        [LOG_TAG, searchKeyword, site_name]));
                     if (processing.has(url)) {
                         processing.delete(url);
                     }
@@ -257,10 +305,20 @@
             "https://m.zhongzilou.com/list/#keyWord#/1"
         ];
 
-        make(result) {
+        make(result, btnTempl) {
             if (isNull(result)) return result;
-            let template1 = formatStr(ADDON_BTN_TEMPLATE, ["#url#", "#text#"], [result.url, result.text]);
-            return htmlTextConvert(template1).getElementsByTagName('a')[0];
+            let btnTemplate = ADDON_BTN_TEMPLATE[btnTempl];
+            let fmtTemplate = formatStr(btnTemplate, ["#url#", "#text#"], [result.url, result.text]);
+            let newBtn, newDom = htmlTextConvert(fmtTemplate);
+            switch (btnTempl) {
+                case 0:
+                    newBtn = newDom.getElementsByTagName('a')[0];
+                    break;
+                case 1:
+                    newBtn = newDom.getElementsByTagName('div')[0];
+                    break;
+            }
+            return newBtn;
         }
     }
 
@@ -288,9 +346,18 @@
         /* Hack end */
         let cb_list = getElementsByClassName(document, 'card-body');
         for (let i = 0; i < cb_list.length; i++) {
+            // Small card
             let ct = getFirstElementByClassName(cb_list[i], 'card-title');
             let lchild = getLastBackChild(cb_list[i], 2);
-            if (isNull(ct) || isNull(lchild)) continue;
+            if (isNull(ct) || isNull(lchild)) {
+                // Big main card
+                let cb_row = getFirstElementByClassName(cb_list[i], 'row');
+                if (isNull(cb_row)) continue;
+                ct = getFirstElementByClassName(cb_row, 'card-title fc2-id');
+                lchild = getFirstElementByIncludeInnerText(cb_row, 'Watch This Videos on FC2 Market');
+                // Small card and Big main card are not found
+                if (isNull(ct) || isNull(lchild)) continue;
+            }
             if (!isNull(lchild.className) && lchild.className.includes("stretched-link")) {
                 lchild.className = lchild.className.replace("stretched-link", "");
             }
@@ -299,10 +366,14 @@
             else {
                 searchKeyWord = ct.innerText;
             }
-            if (lchild.innerText == "More...") {
-                for (let j = 0; j < btnClass.length; ++j) {
-                    requestAddonBtn(new btnClass[j](), searchKeyWord, cb_list[i], lchild);
-                }
+            // Get button template argument
+            let btnTempl = undefined;
+            if (lchild.innerText == "More...") btnTempl = 0;
+            else if (lchild.innerText.includes("Watch This Videos on FC2 Market")) btnTempl = 1;
+            if (isNull(btnTempl)) continue;
+
+            for (let j = 0; j < btnClass.length; ++j) {
+                requestAddonBtn(new btnClass[j](), searchKeyWord, cb_list[i], lchild, btnTempl);
             }
         }
     }, 1000);
