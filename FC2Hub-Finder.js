@@ -221,7 +221,7 @@
             let res_doc = htmlTextConvert(data);
             if (isNull(res_doc)) return result;
             let panel_body = getFirstElementByClassName(res_doc, "panel-body");
-            if (!isNull(panel_body) && getElementsByClassName(panel_body, "list-group").length != 0) {
+            if (!isNull(panel_body) && hasChildIncludeInnerText(panel_body, args.keyword)) {
                 result = new SearchResult(args);
             }
             return result;
