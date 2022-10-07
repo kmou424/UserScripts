@@ -7,19 +7,28 @@
 // @match        https://fc2hub.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=fc2hub.com
 // @grant        GM_xmlhttpRequest
-// @require      https://ghproxy.net/https://raw.githubusercontent.com/bmob/hydrogen-js-sdk/master/dist/Bmob-1.7.1.min.js
+// @require      https://ghproxy.net/https://raw.githubusercontent.com/leancloud/javascript-sdk/dist/dist/av-min.js
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    let BmobInited = false;
-    const BmobApplicationID = "";
-    const BmobRestApiKey = "";
+    const { Query, User } = AV;
 
-    if (!isEmpty(BmobApplicationID) && !isEmpty(BmobRestApiKey)) {
-        Bmob.initialize(BmobApplicationID, BmobRestApiKey);
-        BmobInited = true;
+    const FC2 = AV.Object.extend('FC2');
+
+    let AVInited = false;
+    const appId = "";
+    const appKey = "";
+    const serverURL = "";
+
+    if (!isEmpty(appId) && !isEmpty(appKey) && !isEmpty(serverURL)) {
+        AV.init({
+            appId: appId,
+            appKey: appKey,
+            serverURL: serverURL
+        });
+        AVInited = true;
     }
 
     // 日志标签
@@ -199,14 +208,14 @@
 
 
     function checkVisited(ctitle, keyword, isBigMainCard) {
-        let task = "checkVisited-" + keyword;
+        let task = "checkVisited";
         if (processing.has(task)) return;
         if (visitedHashMap.has(keyword) && !isBigMainCard) return;
         processing.set(task, 1);
-        const fc2query = Bmob.Query('fc2');
-        fc2query.equalTo("video_id", "==", keyword);
-        fc2query.find().then(res => {
-            let found = res.length == 1;
+        const fc2query = new Query('FC2');
+        fc2query.equalTo("videoId", keyword);
+        fc2query.count().then((count) => {
+            let found = count >= 1;
             visitedHashMap.set(keyword, found);
             if (found) {
                 console.log(`${LOG_TAG}: checkVisited: Keyword ${keyword} has been visited`)
@@ -216,14 +225,19 @@
             }
             if (isBigMainCard) {
                 if (!found) {
-                    const putfc2query = Bmob.Query('fc2');
-                    putfc2query.set("video_id", keyword);
+                    const putfc2query = new FC2();
+                    putfc2query.set("videoId", keyword);
                     putfc2query.save().then(res => {
                         visitedHashMap.set(keyword, true);
+                        alert("Visit history has been stored");
+                        processing.delete(task);
                     });
                 }
+            } else {
+                processing.delete(task);
             }
         }).catch(err => {
+            processing.delete(task);
             console.log(`${LOG_TAG}: checkVisited: Query for keyword ${keyword} failed: ${err}`);
         });
     }
@@ -233,12 +247,15 @@
         let keyword = searchKeyword.replace("FC2-PPV-", "");
         for (let i = 0; i < AddonBtnBuilder.sites_name.length; ++i) {
             if (!AddonBtnBuilder.sites_enabled[i]) continue;
+            let retries = (new Array(AddonBtnBuilder.sites_name.length)).fill(0);
+            if (!isNotFoundOnAllSites(retries) && btnTempl != 1) {
+                if (AVInited) checkVisited(ct, keyword, btnTempl == 1)
+            }
             if (hasChildIncludeInnerText(root, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[i], AddonBtnBuilder.sites_name[i]]))) continue;
             let site_name = AddonBtnBuilder.sites_name[i];
             let url = formatStr(AddonBtnBuilder.sites_url[i], ["#keyWord#"], [keyword]);
             if (processing.has(url)) continue;
             else processing.set(url, 1);
-            let retries = (new Array(AddonBtnBuilder.sites_name.length)).fill(0);
             if (map.has(searchKeyword)) {
                 retries = map.get(searchKeyword);
             } else {
@@ -256,8 +273,6 @@
                             addChildAfter(htmlTextToNode(NOT_FOUND_CARD_BADGE_TEMPLATE, 'h4'), ct);
                         }
                     }
-                } else {
-                    if (BmobInited) checkVisited(ct, searchKeyword, btnTempl == 1)
                 }
             }
             if (retries[i] == -1 || retries[i] > MAX_RETRIES) {
