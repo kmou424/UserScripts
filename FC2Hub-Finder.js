@@ -248,7 +248,7 @@
         for (let i = 0; i < AddonBtnBuilder.sites_name.length; ++i) {
             if (!AddonBtnBuilder.sites_enabled[i]) continue;
             let retries = (new Array(AddonBtnBuilder.sites_name.length)).fill(0);
-            if (!isNotFoundOnAllSites(retries) && btnTempl != 1) {
+            if (!isNotFoundOnAllSites(retries)) {
                 if (AVInited) checkVisited(ct, keyword, btnTempl == 1)
             }
             if (hasChildIncludeInnerText(root, formatStr("#btnKey#(#siteName#)", ["#btnKey#", "#siteName#"], [AddonBtnBuilder.sites_btnKey[i], AddonBtnBuilder.sites_name[i]]))) continue;
