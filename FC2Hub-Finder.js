@@ -262,8 +262,7 @@
             if (isNull(data)) return result;
             let res_doc = htmlTextConvert(data);
             if (isNull(res_doc)) return result;
-            let widget_title = getFirstElementByClassName(res_doc, "widget-title");
-            if (!isNull(widget_title) && !hasChildIncludeInnerText(widget_title, "Nothing found")) {
+            if (!hasChildIncludeInnerText(res_doc, "Nothing found")) {
                 result = new SearchResult(args);
             }
             return result;
@@ -358,6 +357,7 @@
                 if (isNull(cb_row)) continue;
                 ct = getFirstElementByClassName(cb_row, 'card-title fc2-id');
                 lchild = getFirstElementByIncludeInnerText(cb_row, 'Watch This Videos on FC2 Market');
+                if (isNull(lchild)) lchild = getFirstElementByIncludeInnerText(cb_row, 'Watch This Videos on LAXD Market')
                 // Small card and Big main card are not found
                 if (isNull(ct) || isNull(lchild)) continue;
             }
@@ -372,7 +372,7 @@
             // Get button template argument
             let btnTempl = undefined;
             if (lchild.innerText == "More...") btnTempl = 0;
-            else if (lchild.innerText.includes("Watch This Videos on FC2 Market")) btnTempl = 1;
+            else if (lchild.innerText.includes('Watch This Videos on FC2 Market') || lchild.innerText.includes('Watch This Videos on LAXD Market')) btnTempl = 1;
             if (isNull(btnTempl)) continue;
 
             for (let j = 0; j < btnClass.length; ++j) {
