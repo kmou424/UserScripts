@@ -471,9 +471,7 @@
 
         static addModals() {
             let container = getFirstElementByClassName(document, 'container');
-            console.log(container);
             let firstDiv = container.getElementsByTagName("div")[0];
-            console.log(firstDiv);
             for (let i = 0; i < Modals.modals_ids.length; ++i) {
                 let modal = htmlTextToNode(formatStr(MODAL_TEMPLATE,
                                                      ["#modal_id#", "#modal_title#", "#modal_text#", "#modal_button_text#"],
