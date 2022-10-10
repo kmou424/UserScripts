@@ -471,6 +471,8 @@
 
         static addModals() {
             let container = getFirstElementByClassName(document, 'container');
+            if (isNull(container)) container = getFirstElementByClassName(document, 'container-fluid');
+            if (isNull(container)) return;
             let firstDiv = container.getElementsByTagName("div")[0];
             for (let i = 0; i < Modals.modals_ids.length; ++i) {
                 let modal = htmlTextToNode(formatStr(MODAL_TEMPLATE,
