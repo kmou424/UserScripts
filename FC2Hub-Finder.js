@@ -8,6 +8,8 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=fc2hub.com
 // @grant        GM_xmlhttpRequest
 // @require      https://ghproxy.net/https://raw.githubusercontent.com/leancloud/javascript-sdk/dist/dist/av-min.js
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js
+// @require      https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js
 // ==/UserScript==
 
 (function() {
@@ -42,6 +44,26 @@
         '<a href="#url#" class="btn" style="margin-right: 4px;margin-left: 4px;color: #fff;background-color: #FF4081;border-color: #FF4081;" target="_blank">#text#</a>',
         '<div class="col-12" style="padding-bottom: 10px;"><a href="#url#" target="_blank" class="btn btn-block" style="color: #fff;background-color: #FF4081;border-color: #FF4081;" target="_blank">#text#</a></div>'
     ];
+
+    // 模态框模板
+    const MODAL_TEMPLATE = '<div id="#modal_id#" class="modal" tabindex="-1">'+
+          '<div class="modal-dialog">'+
+          '<div class="modal-content">'+
+          '<div class="modal-header">'+
+          '<h5 class="modal-title">#modal_title#</h5>'+
+          '<button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+          '<span aria-hidden="true">&times;</span>'+
+          '</button>'+
+          '</div>'+
+          '<div class="modal-body">'+
+          '<p>#modal_text#</p>'+
+          '</div>'+
+          '<div class="modal-footer">'+
+          '<button type="button" class="btn btn-secondary" data-dismiss="modal">#modal_button_text#</button>'+
+          '</div>'+
+          '</div>'+
+          '</div>'+
+          '</div>\n'
 
     // 已访问过的卡片提示文字
     const VISITED_CARD_BADGE_TITLE = 'Visited'
@@ -181,7 +203,9 @@
     function formatStr(str, fmt, rep) {
         if (fmt.length != rep.length) return str;
         for (let i = 0; i < fmt.length; ++i) {
-            str = str.replace(fmt[i], rep[i]);
+            while (str.indexOf(fmt[i]) != -1) {
+                str = str.replace(fmt[i], rep[i]);
+            }
         }
         return str;
     }
@@ -229,7 +253,7 @@
                     putfc2query.set("videoId", keyword);
                     putfc2query.save().then(res => {
                         visitedHashMap.set(keyword, true);
-                        alert("Visit history has been stored");
+                        $(document.getElementById('visitSavedModal')).modal('show');
                         processing.delete(task);
                     });
                 }
@@ -439,10 +463,36 @@
         }
     }
 
+    class Modals {
+        static modals_ids = ["visitSavedModal"];
+        static modals_titles = ["Information"];
+        static modals_texts = ["Visit history has been stored"];
+        static modals_button_texts = ["OK"];
+
+        static addModals() {
+            let container = getFirstElementByClassName(document, 'container');
+            console.log(container);
+            let firstDiv = container.getElementsByTagName("div")[0];
+            console.log(firstDiv);
+            for (let i = 0; i < Modals.modals_ids.length; ++i) {
+                let modal = htmlTextToNode(formatStr(MODAL_TEMPLATE,
+                                                     ["#modal_id#", "#modal_title#", "#modal_text#", "#modal_button_text#"],
+                                                     [Modals.modals_ids[i], Modals.modals_titles[i], Modals.modals_texts[i], Modals.modals_button_texts[i]]
+                                                    ), 'div');
+                addChildBefore(modal, firstDiv);
+            }
+        }
+    }
+
+    /* Add Default Modals begin */
+    Modals.addModals();
+    /* Add Default Modals end */
+
     let interval = setInterval(() => {
         /* Hack begin */
         Hacks.setAllATagBlank();
         /* Hack end */
+
         let cb_list = getElementsByClassName(document, 'card-body');
         for (let i = 0; i < cb_list.length; i++) {
             // Small card
