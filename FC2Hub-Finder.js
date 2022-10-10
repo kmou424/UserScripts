@@ -519,8 +519,19 @@
 
             // Get button template argument
             let btnTempl = undefined;
-            if (lchild.innerText == "More...") btnTempl = 0;
-            else if (lchild.innerText.includes('Watch This Videos on FC2 Market') || lchild.innerText.includes('Watch This Videos on LAXD Market')) btnTempl = 1;
+            if (lchild.innerText == "More...") {
+                btnTempl = 0;
+                lchild.addEventListener("click", function() {
+                    // Dirty add visited badge manually
+                    let keyword = searchKeyWord.replace("FC2-PPV-", "");
+                    if (!visitedHashMap.has(keyword) || (visitedHashMap.has(keyword) && !visitedHashMap.get(keyword))) {
+                        visitedHashMap.set(keyword, true);
+                        addChildAfter(htmlTextToNode(VISITED_CARD_BADGE_TEMPLATE, 'h4'), ct)
+                    }
+                });
+            } else if (lchild.innerText.includes('Watch This Videos on FC2 Market') || lchild.innerText.includes('Watch This Videos on LAXD Market')) {
+                btnTempl = 1;
+            }
             if (isNull(btnTempl)) continue;
 
             for (let j = 0; j < btnClass.length; ++j) {
