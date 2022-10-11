@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GlobalBlankHyperlinkPatcher
 // @homepageURL  https://github.com/kmou424/TampermonkeyScripts
-// @version      0.1
+// @version      0.2
 // @description  Globally add blank target for all <a> tags.
 // @author       kmou424
 // @match        *://*/*
