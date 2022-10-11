@@ -2,16 +2,9 @@
 // @name         CDImageClicker
 // @homepageURL  https://github.com/kmou424/TampermonkeyScripts
 // @version      0.1
-// @description  Skip annoying countdown ads for some image site
+// @description  Skip annoying countdown ads for some image sites
 // @author       kmou424
-// @match        http://imgxkhm.buzz/*
-// @match        https://pics4you.net/*
-// @match        https://imgsto.com/*
-// @match        https://silverpic.com/*
-// @match        https://fotokiz.com/*
-// @match        https://imgsen.com/*
-// @match        https://picbaron.com/*
-// @match        https://imgbaron.com/*
+// @match        *://*/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js
 // ==/UserScript==
 
@@ -67,15 +60,18 @@
         pics4you();
     }
 
-    const domains = ["imgxkhm.buzz", "pics4you.net", "imgsto.com", "silverpic.com", "fotokiz.com", "imgsen.com", "picbaron.com", "imgbaron.com"];
-    const domains_func = [imgxkhm, pics4you, imgsto, silverpic, fotokiz, imgsen, picbaron, imgbaron];
+    function picdollar() {
+        // This website is common with pics4you in layout
+        pics4you();
+    }
+
+    const domains = ["imgxkhm.buzz", "pics4you.net", "imgsto.com", "silverpic.com", "fotokiz.com", "imgsen.com", "picbaron.com", "imgbaron.com", "picdollar.com"];
+    const domains_func = [imgxkhm, pics4you, imgsto, silverpic, fotokiz, imgsen, picbaron, imgbaron, picdollar];
+    const domain = document.domain;
+
+    if (!domains.includes(domain)) return;
 
     let interval = setInterval(() => {
-        let domain = document.domain;
-        for (let i = 0; i < domains.length; ++i) {
-            if (domain == domains[i]) {
-                domains_func[i]();
-            }
-        }
+        domains_func[domains.indexOf(domain)]();
     }, 1000);
 })();
