@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CDImageClicker
 // @homepageURL  https://github.com/kmou424/TampermonkeyScripts
-// @version      0.1
+// @version      0.2
 // @description  Skip annoying countdown ads for some image sites
 // @author       kmou424
 // @match        *://*/*
