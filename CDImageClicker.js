@@ -12,11 +12,35 @@
     'use strict';
     let clicked = false;
 
+    const domain = document.domain;
+
+    const IMAGE_SITES_WITH_FUNC = {
+        "imgxkhm.buzz": imgxkhm,
+        "imagepuitr.buzz": imagepuitr,
+        "pics4you.net": pics4you,
+        "imgsto.com": imgsto,
+        "silverpic.com": silverpic,
+        "fotokiz.com": fotokiz,
+        "imgsen.com": imgsen,
+        "picbaron.com": picbaron,
+        "imgbaron.com": imgbaron,
+        "picdollar.com": picdollar
+    };
+
     function imgxkhm() {
         let btn = document.getElementById('uhaha');
         if (btn != undefined) {
             $(btn).click();
             clicked = true;
+        }
+    }
+
+    function imagepuitr() {
+        // This website is common with imgxkhm in layout
+        imgxkhm();
+        let adblock_layer = document.getElementsByClassName('qzxcdsfds');
+        if (adblock_layer.length > 0) {
+            adblock_layer[0].parentNode.removeChild(adblock_layer[0]);
         }
     }
 
@@ -65,13 +89,9 @@
         pics4you();
     }
 
-    const domains = ["imgxkhm.buzz", "pics4you.net", "imgsto.com", "silverpic.com", "fotokiz.com", "imgsen.com", "picbaron.com", "imgbaron.com", "picdollar.com"];
-    const domains_func = [imgxkhm, pics4you, imgsto, silverpic, fotokiz, imgsen, picbaron, imgbaron, picdollar];
-    const domain = document.domain;
-
-    if (!domains.includes(domain)) return;
+    if (!Object.keys(IMAGE_SITES_WITH_FUNC).includes(domain)) return;
 
     let interval = setInterval(() => {
-        domains_func[domains.indexOf(domain)]();
+        IMAGE_SITES_WITH_FUNC[domain]();
     }, 1000);
 })();
