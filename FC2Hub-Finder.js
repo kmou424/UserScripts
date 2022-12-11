@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FC2Hub-Finder
 // @homepageURL  https://github.com/kmou424/TampermonkeyScripts
-// @version      1.1.3
+// @version      1.1.4
 // @description  Give you a better experience to explore fc2.
 // @author       kmou424
 // @match        https://fc2hub.com/*
@@ -383,7 +383,7 @@
             let res_doc = htmlTextConvert(data);
             if (isNull(res_doc)) return result;
             let widget_title = getFirstElementByClassName(res_doc, "widget-title");
-            if (!isNull(widget_title) && !hasChildIncludeInnerText(widget_title, "Nothing found")) {
+            if (!isNull(widget_title) && !hasChildIncludeInnerText(widget_title, "Nothing found") && widget_title.innerText != "Nothing found") {
                 result = new SearchResult(args);
             }
             return result;
