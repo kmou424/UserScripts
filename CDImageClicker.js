@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         CDImageClicker
 // @homepageURL  https://github.com/kmou424/TampermonkeyScripts
-// @version      0.2
+// @version      1.0
 // @description  Skip annoying countdown ads for some image sites
 // @author       kmou424
 // @match        *://*/*
@@ -18,13 +18,18 @@
         "imgxkhm.buzz": imgxkhm,
         "imagepuitr.buzz": imagepuitr,
         "pics4you.net": pics4you,
-        "imgsto.com": imgsto,
-        "silverpic.com": silverpic,
-        "fotokiz.com": fotokiz,
-        "imgsen.com": imgsen,
-        "picbaron.com": picbaron,
-        "imgbaron.com": imgbaron,
-        "picdollar.com": picdollar
+        "imgsto.com": pics4you,
+        "silverpic.com": pics4you,
+        "fotokiz.com": pics4you,
+        "imgsen.com": pics4you,
+        "picbaron.com": pics4you,
+        "imgbaron.com": pics4you,
+        "picdollar.com": pics4you,
+        "imgstar.eu": pics4you,
+        "imgsdi.site": imagepuitr,
+        "imgsdi.store": imagepuitr,
+        "imgpukxxr.site": imagepuitr,
+        "imgsdi.website": imagepuitr
     };
 
     function imgxkhm() {
@@ -52,46 +57,17 @@
                 clicked = true;
             }
         }
-    }
-
-    function imgsto() {
-        // This website is common with pics4you in layout
-        pics4you();
-    }
-
-    function silverpic() {
-        // This website is common with pics4you in layout
-        pics4you();
-    }
-
-    function fotokiz() {
-        // This website is common with pics4you in layout
-        pics4you();
-    }
-
-    function imgsen() {
-        // This website is common with pics4you in layout
-        pics4you();
-    }
-
-    function picbaron() {
-        // This website is common with pics4you in layout
-        pics4you();
-    }
-
-    function imgbaron() {
-        // This website is common with pics4you in layout
-        pics4you();
-    }
-
-    function picdollar() {
-        // This website is common with pics4you in layout
-        pics4you();
+        // auto roll image
+        let roll = document.getElementsByClassName('roll');
+        while (roll.length > 0) {
+            $(roll[0]).click();
+            roll = document.getElementsByClassName('roll');
+        }
     }
 
     if (!Object.keys(IMAGE_SITES_WITH_FUNC).includes(domain)) return;
 
     let interval = setInterval(() => {
         IMAGE_SITES_WITH_FUNC[domain]();
-    }, 1000);
+    }, 500);
 })();
