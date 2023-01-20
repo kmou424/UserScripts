@@ -7,7 +7,7 @@
 // @match        https://fc2hub.com/*
 // @icon         https://fc2hub.com/images/ico.png
 // @grant        GM_xmlhttpRequest
-// @require      https://ghproxy.net/https://raw.githubusercontent.com/leancloud/javascript-sdk/dist/dist/av-min.js
+// @require      https://ghproxy.com/https://raw.githubusercontent.com/leancloud/javascript-sdk/dist/dist/av-min.js
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js
 // @require      https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js
 // ==/UserScript==
