@@ -423,7 +423,7 @@
         ];
         static sites_url = [
             "https://supjav.com/?s=#keyWord#",
-            "https://www3.bestjavporn.com/search/#keyWord#",
+            "https://www4.bestjavporn.com/search/#keyWord#",
             "https://sukebei.nyaa.si/?f=0&c=0_0&q=#keyWord#",
             "https://m.zhongzilou.com/list/#keyWord#/1"
         ];
