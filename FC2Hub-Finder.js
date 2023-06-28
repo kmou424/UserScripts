@@ -378,15 +378,7 @@
         }
 
         static bestjavporn(data, args) {
-            let result = undefined;
-            if (isNull(data)) return result;
-            let res_doc = htmlTextConvert(data);
-            if (isNull(res_doc)) return result;
-            let widget_title = getFirstElementByClassName(res_doc, "widget-title");
-            if (!isNull(widget_title) && !hasChildIncludeInnerText(widget_title, "Nothing found") && widget_title.innerText != "Nothing found") {
-                result = new SearchResult(args);
-            }
-            return result;
+            return new SearchResult(args);
         }
 
         static sukebei(data, args) {
@@ -423,7 +415,7 @@
         ];
         static sites_url = [
             "https://supjav.com/?s=#keyWord#",
-            "https://www4.bestjavporn.com/search/#keyWord#",
+            "https://www4.bestjavporn.com/video/fc2-ppv-#keyWord#/",
             "https://sukebei.nyaa.si/?f=0&c=0_0&q=#keyWord#",
             "https://m.zhongzilou.com/list/#keyWord#/1"
         ];
