@@ -2,7 +2,7 @@
 
 commits := $(shell git rev-list --count HEAD)
 
-export VERSION_CODE=$(commits)
+export VERSION_CODE = v$(commits)
 
 prepare:
 	@busybox mkdir -p build
