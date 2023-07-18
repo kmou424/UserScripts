@@ -44,12 +44,14 @@ const RunBlankPatch = async () => {
 
   // @ts-ignore
   for (const aTag of aTags) {
-    if (aTag.href.startsWith('javascript:') || aTag.href.startsWith(document.URL + "#") || aTag.href === '') {
+    // console.log(document.URL + "#")
+    if (aTag.href.startsWith('javascript:') || aTag.href.startsWith(document.URL + "/#") || aTag.href === '') {
       continue;
     }
     const url = new URL(aTag.href).toString();
+    const hashOfATag = Crypto.MD5(new XMLSerializer().serializeToString(aTag));
 
-    if (BlankPatchRecorder.get(url)) {
+    if (BlankPatchRecorder.get(hashOfATag)) {
       continue;
     }
 
@@ -67,7 +69,7 @@ const RunBlankPatch = async () => {
       aTag.target += " _blank";
     }
 
-    BlankPatchRecorder.set(url);
+    BlankPatchRecorder.set(hashOfATag);
   }
 
   BlankPatchMutex.unlock();
@@ -80,12 +82,13 @@ const RunAutoOpen = async () => {
 
   // @ts-ignore
   for (const aTag of aTags) {
-    if (aTag.href.startsWith('javascript:') || aTag.href.startsWith(document.URL + "#") || aTag.href === '') {
+    if (aTag.href.startsWith('javascript:') || aTag.href.startsWith(document.URL + "/#") || aTag.href === '') {
       continue;
     }
     const url = new URL(aTag.href).toString();
+    const hashOfATag = Crypto.MD5(new XMLSerializer().serializeToString(aTag));
 
-    if (AutoOpenRecorder.get(url)) {
+    if (AutoOpenRecorder.get(hashOfATag)) {
       continue;
     }
 
@@ -103,7 +106,7 @@ const RunAutoOpen = async () => {
       }
     }
 
-    AutoOpenRecorder.set(url);
+    AutoOpenRecorder.set(hashOfATag);
   }
 
   AutoOpenMutex.unlock();
