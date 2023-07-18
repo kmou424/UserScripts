@@ -4,7 +4,7 @@ import {AUTO_OPEN, BLANK_PATCH} from "./config";
 import Logcat from "./logcat";
 import {Pattern, PatternMatcher, TYPE_MULTI_WILDCARD} from "./lib/pattern";
 import {GM_openInTab} from "$";
-import Crypto from "./lib/crypto";
+import {Crypto, DOMCrypto} from "./lib/crypto";
 import {KVStorage} from "./lib/storage";
 import {ValuePath} from "./type";
 import {APP_NAME} from "./const";
@@ -57,7 +57,7 @@ const RunBlankPatch = async () => {
       continue;
     }
     const url = new URL(aTag.href).toString();
-    const hashOfATag = Crypto.MD5(new XMLSerializer().serializeToString(aTag));
+    const hashOfATag = DOMCrypto.MD5(aTag);
 
     if (BlankPatchRecorder.get(hashOfATag)) {
       continue;
@@ -94,7 +94,7 @@ const RunAutoOpen = async () => {
       continue;
     }
     const url = new URL(aTag.href).toString();
-    const hashOfATag = Crypto.MD5(new XMLSerializer().serializeToString(aTag));
+    let hashOfATag = DOMCrypto.MD5(aTag);
 
     if (AutoOpenRecorder.get(hashOfATag)) {
       continue;
@@ -108,6 +108,8 @@ const RunAutoOpen = async () => {
       const stored = await KVStorage.getByPath<boolean>(valuePath, false);
       if (stored) {
         aTag.text = `(${I18n.get(I18nKeys.UI_VISITED)}) ${aTag.text}`;
+        // update hash because innerText has been changed
+        hashOfATag = DOMCrypto.MD5(aTag);
       } else {
         GM_openInTab(url);
         await KVStorage.setByPath<boolean>(valuePath, true);

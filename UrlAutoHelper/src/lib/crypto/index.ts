@@ -1,3 +1,6 @@
-import {Crypto} from "./crypto";
+import {Crypto, DOMCrypto} from "./crypto";
 
-export default Crypto;
+export {
+  Crypto,
+  DOMCrypto
+};
