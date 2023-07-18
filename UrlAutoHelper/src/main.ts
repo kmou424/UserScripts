@@ -107,7 +107,7 @@ const RunAutoOpen = async () => {
       const valuePath = new ValuePath(APP_NAME, "opened", urlMD5);
       const stored = await KVStorage.getByPath<boolean>(valuePath, false);
       if (stored) {
-        aTag.text = `(${I18n.get(I18nKeys.UI_VISITED)}) ${aTag.text}`;
+        aTag.text = `${I18n.get(I18nKeys.UI_VISITED)} ${aTag.text}`;
         // update hash because innerText has been changed
         hashOfATag = DOMCrypto.MD5(aTag);
       } else {
