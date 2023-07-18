@@ -30,7 +30,7 @@ const RunScript = async () => {
     if (BlankPatchMutex.enabled() && !BlankPatchMutex.locked()) {
       RunBlankPatch().then(null);
     }
-    if (AutoOpenMutex.enabled() && !BlankPatchMutex.locked()) {
+    if (AutoOpenMutex.enabled() && !AutoOpenMutex.locked()) {
       RunAutoOpen().then(null);
     }
   }, 200);
