@@ -20,21 +20,29 @@ const BlankPatchRecorder = new Recorder();
 const AutoOpenRecorder = new Recorder();
 
 const RunScript = async () => {
-  if (new PatternMatcher(new Pattern(TYPE_MULTI_WILDCARD, ...BLANK_PATCH.RUN_ON)).match(document.URL)) {
-    BlankPatchMutex.enable();
-  }
-  if (new PatternMatcher(new Pattern(TYPE_MULTI_WILDCARD, ...AUTO_OPEN.RUN_ON)).match(document.URL)) {
-    AutoOpenMutex.enable();
-  }
-  setInterval(() => {
+  const CheckModules = () => {
+    if (new PatternMatcher(new Pattern(TYPE_MULTI_WILDCARD, ...BLANK_PATCH.RUN_ON)).match(document.URL)) {
+      BlankPatchMutex.enable();
+    }
+    if (new PatternMatcher(new Pattern(TYPE_MULTI_WILDCARD, ...AUTO_OPEN.RUN_ON)).match(document.URL)) {
+      AutoOpenMutex.enable();
+    }
+  };
+
+  const RunModules = () => {
     if (BlankPatchMutex.enabled() && !BlankPatchMutex.locked()) {
       RunBlankPatch().then(null);
     }
     if (AutoOpenMutex.enabled() && !AutoOpenMutex.locked()) {
       RunAutoOpen().then(null);
     }
-  }, 200);
+  };
 
+  CheckModules();
+  RunModules();
+  setInterval(() => {
+    RunModules();
+  }, 500);
 };
 
 const RunBlankPatch = async () => {
