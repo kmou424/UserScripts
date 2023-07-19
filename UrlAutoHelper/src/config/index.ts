@@ -1,6 +1,6 @@
-import {AUTO_OPEN, AUTOMATOR, BLANK_PATCH} from "./config.json";
+import {AUTO_OPEN, BLANK_PATCH} from "./config.json";
 
 
 export {
-  AUTO_OPEN, AUTOMATOR, BLANK_PATCH
+  AUTO_OPEN, BLANK_PATCH
 };
