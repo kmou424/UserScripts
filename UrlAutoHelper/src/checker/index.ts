@@ -1,4 +1,4 @@
-import {StringFormatter} from "../lib/formatter";
+import {StringFormatter} from "../../../common/lib/formatter";
 
 export default class Checker {
   static isInvalidHref(href: string): boolean {
@@ -13,6 +13,6 @@ export default class Checker {
     // avoid interfering with the evaluation of regular expression
     const docUrlForRegExp = StringFormatter.escapeRegExpChars(docUrl.toString());
 
-    return new RegExp(`${docUrlForRegExp}#.*`).test(url)
+    return new RegExp(`${docUrlForRegExp}#.*`).test(url);
   }
 }

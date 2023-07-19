@@ -14,6 +14,7 @@ endef
 TARGET = default
 
 prepare:
+	@npm i
 	@busybox mkdir -p build
 
 build-UrlAutoHelper:

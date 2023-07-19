@@ -32,6 +32,6 @@ export default class Mutex {
   }
 
   public enabled(): boolean {
-    return this.isEnabled
+    return this.isEnabled;
   }
 }

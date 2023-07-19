@@ -1,4 +1,4 @@
-import {ValuePath} from "../type";
+import {ValuePath} from "../../../common/type";
 
 const I18nKeys = {
   UI_VISITED: new ValuePath("ui", "visited")

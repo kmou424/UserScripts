@@ -1,17 +1,17 @@
 // @ts-ignore isolatedModules
 
 import {AUTO_OPEN, BLANK_PATCH} from "./config";
-import Logcat from "./logcat";
-import {Pattern, PatternMatcher, TYPE_MULTI_WILDCARD} from "./lib/pattern";
+import Logcat from "../../common/logcat";
+import {Pattern, PatternMatcher, TYPE_MULTI_WILDCARD} from "../../common/lib/pattern";
 import {GM_addElement, GM_openInTab} from "$";
-import {Crypto, DOMCrypto} from "./lib/crypto";
-import {KVStorage} from "./lib/storage";
-import {ValuePath} from "./type";
+import {Crypto, DOMCrypto} from "../../common/lib/crypto";
+import {KVStorage} from "../../common/lib/storage";
+import {ValuePath} from "../../common/type";
 import {APP_NAME} from "./const";
 import I18nKeys from "./i18n/keys";
 import {I18n} from "./i18n";
-import Mutex from "./lib/mutex";
-import Recorder from "./lib/recorder";
+import Mutex from "../../common/lib/mutex";
+import Recorder from "../../common/lib/recorder";
 import Templates from "./templates";
 import Checker from "./checker";
 
@@ -54,7 +54,7 @@ const RunScript = async () => {
   setInterval(() => {
     RunModules();
   }, 500);
-}
+};
 
 const RunBlankPatch = async () => {
   BlankPatchMutex.lock();

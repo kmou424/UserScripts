@@ -1,5 +1,5 @@
-import Logcat from "../logcat";
-import {ValuePath} from "../type";
+import Logcat from "../../../common/logcat";
+import {ValuePath} from "../../../common/type";
 import {i18n} from './i18n.json';
 
 const i18nSupported = ["zh-CN", "en-US"];

@@ -1,4 +1,4 @@
-import {APP_NAME} from "../const";
+import {APP_NAME} from "../../UrlAutoHelper/src/const";
 
 const LOG = (level: string, ...msg: any[]) => {
   console.log(`[${level}][${new Date().toLocaleString()}] ${APP_NAME}:`, ...msg);

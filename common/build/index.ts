@@ -4,10 +4,10 @@ export default class Build {
     while (version.length < 4) {
       version = '0' + version;
     }
-    return version.split('').join('.')
+    return version.split('').join('.');
   }
 
   static getUserScriptUrl(name: string): string {
-    return `https://raw.githubusercontent.com/kmou424/TampermonkeyScripts/build/${name}.user.js`
+    return `https://raw.githubusercontent.com/kmou424/TampermonkeyScripts/build/${name}.user.js`;
   }
 }
