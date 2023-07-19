@@ -3,7 +3,7 @@
 import {AUTO_OPEN, BLANK_PATCH} from "./config";
 import Logcat from "./logcat";
 import {Pattern, PatternMatcher, TYPE_MULTI_WILDCARD} from "./lib/pattern";
-import {GM_openInTab} from "$";
+import {GM_addElement, GM_openInTab} from "$";
 import {Crypto, DOMCrypto} from "./lib/crypto";
 import {KVStorage} from "./lib/storage";
 import {ValuePath} from "./type";
@@ -12,6 +12,7 @@ import I18nKeys from "./i18n/keys";
 import {I18n} from "./i18n";
 import Mutex from "./lib/mutex";
 import Recorder from "./lib/recorder";
+import Templates from "./templates";
 
 const BlankPatchMutex = new Mutex(false);
 const AutoOpenMutex = new Mutex(false);
@@ -74,11 +75,11 @@ const RunBlankPatch = async () => {
 
     Logcat.INFO(`Patching matched url "${url}"`);
 
-    if (aTag.target === undefined || aTag.target === "") {
-      aTag.target = "_blank";
-    } else if (!aTag.target.includes("_blank")) {
-      aTag.target += " _blank";
-    }
+    GM_addElement("script", {
+      textContent: Templates.SCRIPT_OPEN_HYPERLINK
+    });
+
+    aTag.setAttribute("onclick", `CustomOpenNewHyperlink(event, "${url}", true)`);
 
     BlankPatchRecorder.set(hashOfATag);
   }
