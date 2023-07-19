@@ -45,6 +45,10 @@ const RunScript = async () => {
   }, 500);
 };
 
+const isInvalidHref = (href: string): boolean => {
+  return href.startsWith('javascript:') || href.endsWith("/#") || href === '';
+};
+
 const RunBlankPatch = async () => {
   BlankPatchMutex.lock();
 
@@ -52,8 +56,7 @@ const RunBlankPatch = async () => {
 
   // @ts-ignore
   for (const aTag of aTags) {
-    // console.log(document.URL + "#")
-    if (aTag.href.startsWith('javascript:') || aTag.href.startsWith(document.URL + "/#") || aTag.href === '') {
+    if (isInvalidHref(aTag.href)) {
       continue;
     }
     const url = new URL(aTag.href).toString();
@@ -90,7 +93,7 @@ const RunAutoOpen = async () => {
 
   // @ts-ignore
   for (const aTag of aTags) {
-    if (aTag.href.startsWith('javascript:') || aTag.href.startsWith(document.URL + "/#") || aTag.href === '') {
+    if (isInvalidHref(aTag.href)) {
       continue;
     }
     const url = new URL(aTag.href).toString();
