@@ -1,15 +1,21 @@
 {
   "BLANK_PATCH": {
-    "RUN_ON": [
+    "INCLUDES": [
       "*"
+    ],
+    "EXCLUDES": [
+      "www.youtube.com"
     ],
     "RULES": [
       "*"
     ]
   },
   "AUTO_OPEN": {
-    "RUN_ON": [
+    "INCLUDES": [
       "https://sukebei.nyaa.si/"
+    ],
+    "EXCLUDES": [
+
     ],
     "RULES": [
       "pics4you.net",

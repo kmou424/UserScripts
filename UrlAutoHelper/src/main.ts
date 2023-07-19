@@ -21,13 +21,22 @@ const BlankPatchRecorder = new Recorder();
 const AutoOpenRecorder = new Recorder();
 
 const RunScript = async () => {
+  const WindowUrlMatcher = (wildcards: string[]): boolean => {
+    return new PatternMatcher(new Pattern(TYPE_MULTI_WILDCARD, ...wildcards)).match(document.URL);
+  };
+
   const CheckModules = () => {
-    if (new PatternMatcher(new Pattern(TYPE_MULTI_WILDCARD, ...BLANK_PATCH.RUN_ON)).match(document.URL)) {
-      BlankPatchMutex.enable();
-    }
-    if (new PatternMatcher(new Pattern(TYPE_MULTI_WILDCARD, ...AUTO_OPEN.RUN_ON)).match(document.URL)) {
-      AutoOpenMutex.enable();
-    }
+    BLANK_PATCH.INCLUDES.length > 0 ? (() => {
+      if (!WindowUrlMatcher(BLANK_PATCH.EXCLUDES) && WindowUrlMatcher(BLANK_PATCH.INCLUDES)) {
+        BlankPatchMutex.enable();
+      }
+    })() : null;
+
+    AUTO_OPEN.INCLUDES.length > 0 ? (() => {
+      if (!WindowUrlMatcher(AUTO_OPEN.EXCLUDES) && WindowUrlMatcher(AUTO_OPEN.INCLUDES)) {
+        AutoOpenMutex.enable();
+      }
+    })() : null;
   };
 
   const RunModules = () => {
