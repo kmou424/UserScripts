@@ -27,16 +27,14 @@ const RunScript = async () => {
   };
 
   const CheckModules = () => {
-    BLANK_PATCH.INCLUDES.length > 0 ? (() => {
-      if (!WindowUrlMatcher(BLANK_PATCH.EXCLUDES) && WindowUrlMatcher(BLANK_PATCH.INCLUDES)) {
-        BlankPatchMutex.enable();
-      }
+    (BLANK_PATCH.EXCLUDES.length > 0 ? !WindowUrlMatcher(BLANK_PATCH.EXCLUDES) : false) &&
+    (BLANK_PATCH.INCLUDES.length > 0 ? WindowUrlMatcher(BLANK_PATCH.INCLUDES) : false) ? (() => {
+      BlankPatchMutex.enable();
     })() : null;
 
-    AUTO_OPEN.INCLUDES.length > 0 ? (() => {
-      if (!WindowUrlMatcher(AUTO_OPEN.EXCLUDES) && WindowUrlMatcher(AUTO_OPEN.INCLUDES)) {
-        AutoOpenMutex.enable();
-      }
+    (AUTO_OPEN.EXCLUDES.length > 0 ? !WindowUrlMatcher(AUTO_OPEN.EXCLUDES) : false) &&
+    (AUTO_OPEN.INCLUDES.length > 0 ? WindowUrlMatcher(AUTO_OPEN.INCLUDES) : false) ? (() => {
+      AutoOpenMutex.enable();
     })() : null;
   };
 
