@@ -8,6 +8,6 @@ export default class Build {
   }
 
   static getUserScriptUrl(name: string): string {
-    return `https://raw.githubusercontent.com/kmou424/TampermonkeyScripts/build/${name}.user.js`;
+    return `https://raw.githubusercontent.com/kmou424/UserScripts/build/${name}.user.js`;
   }
 }

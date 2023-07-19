@@ -13,7 +13,7 @@ export default defineConfig({
       "icon": 'https://vitejs.dev/logo.svg',
       "match": ['*://*/*'],
       "name": 'UrlAutoHelper',
-      "namespace": 'https://github.com/kmou424/TampermonkeyScripts',
+      "namespace": 'https://github.com/kmou424/UserScripts',
       "run-at": 'document-end',
       "updateURL": Build.getUserScriptUrl(name),
       "version": `${Build.getVersion()}`
