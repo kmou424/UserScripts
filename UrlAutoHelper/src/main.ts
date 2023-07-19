@@ -13,6 +13,7 @@ import {I18n} from "./i18n";
 import Mutex from "./lib/mutex";
 import Recorder from "./lib/recorder";
 import Templates from "./templates";
+import Checker from "./checker";
 
 const BlankPatchMutex = new Mutex(false);
 const AutoOpenMutex = new Mutex(false);
@@ -53,11 +54,7 @@ const RunScript = async () => {
   setInterval(() => {
     RunModules();
   }, 500);
-};
-
-const isInvalidHref = (href: string): boolean => {
-  return href.startsWith('javascript:') || href.endsWith("/#") || href === '';
-};
+}
 
 const RunBlankPatch = async () => {
   BlankPatchMutex.lock();
@@ -66,10 +63,13 @@ const RunBlankPatch = async () => {
 
   // @ts-ignore
   for (const aTag of aTags) {
-    if (isInvalidHref(aTag.href)) {
-      continue;
-    }
+    // check href
+    if (Checker.isInvalidHref(aTag.href)) continue;
+
     const url = new URL(aTag.href).toString();
+    // check url
+    if (Checker.isInvalidUrl(url)) continue;
+
     const hashOfATag = DOMCrypto.MD5(aTag);
 
     if (BlankPatchRecorder.get(hashOfATag)) {
@@ -103,9 +103,9 @@ const RunAutoOpen = async () => {
 
   // @ts-ignore
   for (const aTag of aTags) {
-    if (isInvalidHref(aTag.href)) {
-      continue;
-    }
+    // check href
+    if (Checker.isInvalidHref(aTag.href)) continue;
+
     const url = new URL(aTag.href).toString();
     let hashOfATag = DOMCrypto.MD5(aTag);
 
