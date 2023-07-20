@@ -3,7 +3,7 @@
 import {AUTO_OPEN, BLANK_PATCH} from "./config";
 import Logcat from "../../common/logcat";
 import {Pattern, PatternMatcher, TYPE_MULTI_WILDCARD} from "../../common/lib/pattern";
-import {GM_addElement, GM_openInTab} from "$";
+import {GM_openInTab} from "$";
 import {Crypto, DOMCrypto} from "../../common/lib/crypto";
 import {KVStorage} from "../../common/lib/storage";
 import {ValuePath} from "../../common/type";
@@ -14,6 +14,7 @@ import Mutex from "../../common/lib/mutex";
 import Recorder from "../../common/lib/recorder";
 import Templates from "./templates";
 import Checker from "./checker";
+import AddonElementManager from "../../common/lib/addon";
 
 const BlankPatchMutex = new Mutex(false);
 const AutoOpenMutex = new Mutex(false);
@@ -57,6 +58,9 @@ const RunScript = async () => {
 const RunBlankPatch = async () => {
   BlankPatchMutex.lock();
 
+  // add necessary script element
+  AddonElementManager.addScript(Templates.SCRIPT_OPEN_HYPERLINK);
+
   const aTags = document.getElementsByTagName("a");
 
   // @ts-ignore
@@ -81,10 +85,6 @@ const RunBlankPatch = async () => {
     }
 
     Logcat.INFO(`Patching matched url "${url}"`);
-
-    GM_addElement("script", {
-      textContent: Templates.SCRIPT_OPEN_HYPERLINK
-    });
 
     aTag.setAttribute("onclick", `CustomOpenNewHyperlink(event, "${url}", true)`);
 
