@@ -28,12 +28,12 @@ const RunScript = async () => {
   };
 
   const CheckModules = () => {
-    (BLANK_PATCH.EXCLUDES.length > 0 ? !WindowUrlMatcher(BLANK_PATCH.EXCLUDES) : false) &&
+    (BLANK_PATCH.EXCLUDES.length > 0 ? !WindowUrlMatcher(BLANK_PATCH.EXCLUDES) : true) &&
     (BLANK_PATCH.INCLUDES.length > 0 ? WindowUrlMatcher(BLANK_PATCH.INCLUDES) : false) ? (() => {
       BlankPatchMutex.enable();
     })() : null;
 
-    (AUTO_OPEN.EXCLUDES.length > 0 ? !WindowUrlMatcher(AUTO_OPEN.EXCLUDES) : false) &&
+    (AUTO_OPEN.EXCLUDES.length > 0 ? !WindowUrlMatcher(AUTO_OPEN.EXCLUDES) : true) &&
     (AUTO_OPEN.INCLUDES.length > 0 ? WindowUrlMatcher(AUTO_OPEN.INCLUDES) : false) ? (() => {
       AutoOpenMutex.enable();
     })() : null;
