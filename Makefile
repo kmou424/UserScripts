@@ -1,34 +1,36 @@
 .DEFAULT_GOAL := all
 
-commits := $(shell git rev-list --count HEAD)
+include Makefile.env.mk
 
-export VERSION_CODE = $(commits)
+USERSCRIPT_TARGETS := \
+	UrlAutoHelper
 
-define assert
-@if ! $1; then \
-    echo "Error:$2"; \
-    exit 1; \
-fi
-endef
+env_check:
+	$(call assert, $(TEST) -n "$(TARGET)", "You must specific a target need to continue")
+	$(call assert, $(TEST) -d $(TARGET), "Directory \"$(TARGET)\" not found")
+	$(call echo-h, Installing global dependencies)
+	@npm i $(IGNORE_STDOUT)
 
-TARGET = default
+build: env_check
+	@TARGET_LOWER=$(shell echo $(TARGET) | $(TR) '[:upper:]' '[:lower:]') && \
+		cd $(TARGET) && \
+		$(call echo, Installing dependencies for $(TARGET)) && npm i $(IGNORE_STDOUT) && \
+		$(call echo, Building $(TARGET)) && npm run build $(IGNORE_STDOUT) && \
+		$(call echo, Moving distribution of $(TARGET)) && $(MOVE) -f dist/$$TARGET_LOWER.user.js ../dist/$$TARGET_LOWER.user.js
+	$(call echo-h, Done)
 
-prepare:
-	@npm i
-	@busybox mkdir -p build
-
-build-UrlAutoHelper:
-	@cd UrlAutoHelper && npm i && npm run build && \
-		busybox cp dist/urlautohelper.user.js ../build/urlautohelper.user.js
-
-debug:
-	$(call assert, busybox test "$(TARGET)" != "default", "You must specific a target need to debug")
-	$(call assert, busybox test -d $(TARGET), "Target directory: \"$(TARGET)\" not found")
-	@cd $(TARGET) && npm i && npm run dev
+debug: env_check
+	@cd $(TARGET) && \
+	$(call echo, Installing dependencies for $(TARGET)) && npm i $(IGNORE_STDOUT) $(IGNORE_STDOUT) && \
+	npm run dev
 
 clean:
-	@busybox rm -rf build
+	@$(RM) -rf dist
 
-all: prepare build-UrlAutoHelper
+build_prepare:
+	@$(MKDIR) -p dist
 
-.PHONY: prepare clean
+all: build_prepare
+	@$(foreach target, $(USERSCRIPT_TARGETS), $(MAKE) build TARGET=$(target);)
+
+.PHONY: build_prepare clean

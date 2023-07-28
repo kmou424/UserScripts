@@ -11,37 +11,37 @@ jobs:
     if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout main branch
-      uses: actions/checkout@v3
-      with:
-        ref: main
-        path: main  
-    - name: Prepare Node.JS 20.x Environment
-      uses: actions/setup-node@v3
-      with:
-        node-version: 20.x
-    - name: Make userscripts
-      run: |
-        cd main || exit 1
-        git fetch --unshallow
-        make
-    - name: Checkout build branch
-      uses: actions/checkout@v3
-      with:
-        ref: build
-        path: build
-    - name: Move userscripts
-      run: |
-        cd main || exit 1
-        cp build/*.js ../build/
-    - name: Commit to build branch
-      run: |
-        cd build || exit 1
-        git config user.name 'github-actions[bot]'
-        git config user.email 'github-actions[bot]@users.noreply.github.com'
-        git checkout --orphan temp
-        git add -A
-        git commit -am "Auto build"
-        git branch -D build
-        git branch -m build
-        git push -f origin build
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          path: main
+      - name: Prepare Node.JS 20.x Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+      - name: Make userscripts
+        run: |
+          cd main || exit 1
+          git fetch --unshallow
+          make
+      - name: Checkout build branch
+        uses: actions/checkout@v3
+        with:
+          ref: build
+          path: build
+      - name: Move userscripts
+        run: |
+          cd main || exit 1
+          cp dist/*.js ../build/
+      - name: Commit to build branch
+        run: |
+          cd build || exit 1
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout --orphan temp
+          git add -A
+          git commit -am "Auto build"
+          git branch -D build
+          git branch -m build
+          git push -f origin build
