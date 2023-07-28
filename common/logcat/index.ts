@@ -1,23 +1,26 @@
-import {APP_NAME} from "../../UrlAutoHelper/src/const";
+export default class Logger {
+  private readonly appName: string;
+  private LOG = (level: string, ...msg: any[]) => {
+    console.log(`[${level}][${new Date().toLocaleString()}] ${this.appName}:`, ...msg);
+  };
 
-const LOG = (level: string, ...msg: any[]) => {
-  console.log(`[${level}][${new Date().toLocaleString()}] ${APP_NAME}:`, ...msg);
-};
-
-export default class Logcat {
-  public static DEBUG(...msg: any[]) {
-    LOG("DEBUG", ...msg);
+  constructor(appName: string) {
+    this.appName = appName;
   }
 
-  public static INFO(...msg: any[]) {
-    LOG("INFO", ...msg);
+  public DEBUG(...msg: any[]) {
+    this.LOG("DEBUG", ...msg);
   }
 
-  public static WARN(...msg: any[]) {
-    LOG("WARN", ...msg);
+  public INFO(...msg: any[]) {
+    this.LOG("INFO", ...msg);
   }
 
-  public static ERROR(...msg: any[]) {
-    LOG("ERROR", ...msg);
+  public WARN(...msg: any[]) {
+    this.LOG("WARN", ...msg);
+  }
+
+  public ERROR(...msg: any[]) {
+    this.LOG("ERROR", ...msg);
   }
 }

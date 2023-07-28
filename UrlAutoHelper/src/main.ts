@@ -1,13 +1,12 @@
 // @ts-ignore isolatedModules
 
 import {AUTO_OPEN, BLANK_PATCH} from "./config";
-import Logcat from "../../common/logcat";
 import {Pattern, PatternMatcher, TYPE_MULTI_WILDCARD} from "../../common/lib/pattern";
 import {GM_openInTab} from "$";
 import {Crypto, DOMCrypto} from "../../common/lib/crypto";
 import {KVStorage} from "../../common/lib/storage";
 import {ValuePath} from "../../common/type";
-import {APP_NAME} from "./const";
+import {UAH_APP_NAME, UAH_LOGGER} from "./const";
 import I18nKeys from "./i18n/keys";
 import {I18n} from "./i18n";
 import Mutex from "../../common/lib/mutex";
@@ -84,7 +83,7 @@ const RunBlankPatch = async () => {
       continue;
     }
 
-    Logcat.INFO(`Patching matched url "${url}"`);
+    UAH_LOGGER.INFO(`Patching matched url "${url}"`);
 
     aTag.setAttribute("onclick", `CustomOpenNewHyperlink(event, "${url}", true)`);
 
@@ -115,7 +114,7 @@ const RunAutoOpen = async () => {
 
     if (isUrlMatched) {
       const urlMD5 = Crypto.MD5(url);
-      const valuePath = new ValuePath(APP_NAME, "opened", urlMD5);
+      const valuePath = new ValuePath(UAH_APP_NAME, "opened", urlMD5);
       const stored = await KVStorage.getByPath<boolean>(valuePath, false);
       if (stored) {
         aTag.text = `${I18n.get(I18nKeys.UI_VISITED)} ${aTag.text}`;

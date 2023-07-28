@@ -1,5 +1,9 @@
-const APP_NAME = "UrlAutoHelper";
+import Logger from "../../../common/logcat";
+
+const UAH_APP_NAME = "UrlAutoHelper";
+const UAH_LOGGER = new Logger(UAH_APP_NAME);
 
 export {
-  APP_NAME
+  UAH_APP_NAME,
+  UAH_LOGGER
 };
