@@ -21,7 +21,7 @@ build: env_check
 
 debug: env_check
 	@cd $(TARGET) && \
-	$(call echo, Installing dependencies for $(TARGET)) && npm i $(IGNORE_STDOUT) $(IGNORE_STDOUT) && \
+	$(call echo, Installing dependencies for $(TARGET)) && npm i $(IGNORE_STDOUT) && \
 	npm run dev
 
 clean:
