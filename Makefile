@@ -3,7 +3,8 @@
 include Makefile.env.mk
 
 USERSCRIPT_TARGETS := \
-	UrlAutoHelper
+	UrlAutoHelper \
+	ByeByeAnnoyingThumbnails
 
 env_check:
 	$(call assert, $(TEST) -n "$(TARGET)", "You must specific a target need to continue")
